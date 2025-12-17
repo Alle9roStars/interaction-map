@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Interaction Map (Safe)</title>
+<title>交友関係マップ (Safe)</title>
+
+<!-- html2canvas は head に -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 <style>
 body { background:#eef2f5; font-family: system-ui; }
 #map { position: relative; width: 90vw; height: 90vw; margin: auto; }
@@ -25,9 +29,9 @@ footer {
   font-size:12px;
   opacity:.7;
 }
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </style>
 </head>
+
 <body>
 
 <h2 style="text-align:center">Interaction Map</h2>
@@ -35,23 +39,6 @@ footer {
 <div id="map">
   <div class="user center"></div>
 </div>
-
-<footer>
-🔒 Read-only / 💾 No data stored
-</footer>
-
-<script>
-const map = document.getElementById("map");
-for(let i=0;i<12;i++){
-  const f = document.createElement("div");
-  f.className="user friend";
-  const angle = i * (Math.PI*2/12);
-  const r = 120 + Math.random()*40;
-  f.style.left = `calc(50% + ${Math.cos(angle)*r}px - 25px)`;
-  f.style.top  = `calc(50% + ${Math.sin(angle)*r}px - 25px)`;
-  map.appendChild(f);
-}
-</script>
 
 <button id="shareBtn" style="
   display:block;
@@ -62,27 +49,43 @@ for(let i=0;i<12;i++){
 📤 Xで共有する
 </button>
 
+<footer>
+🔒 Read-only / 💾 No data stored
+</footer>
+
+<script>
+// 丸を配置
+const map = document.getElementById("map");
+for(let i=0;i<12;i++){
+  const f = document.createElement("div");
+  f.className="user friend";
+  const angle = i * (Math.PI*2/12);
+  const r = 120 + Math.random()*40;
+  f.style.left = `calc(50% + ${Math.cos(angle)*r}px - 25px)`;
+  f.style.top  = `calc(50% + ${Math.sin(angle)*r}px - 25px)`;
+  map.appendChild(f);
+}
+
+// 共有ボタン
 document.getElementById("shareBtn").addEventListener("click", async () => {
-  const map = document.getElementById("map");
   const canvas = await html2canvas(map);
   const image = canvas.toDataURL("image/png");
 
   const text = encodeURIComponent(
-    "Twitterでの最近のやりとりを可視化してみた\n（直近30日・公開情報のみ）"
+    "Twitterでの最近のやりとりを可視化してみた（直近30日・公開情報のみ）"
   );
 
-  // 画像はユーザーが保存→手動投稿（iOS制限のため）
-  const win = window.open(
+  window.open(
     `https://twitter.com/intent/tweet?text=${text}`,
     "_blank"
   );
 
-  // 画像DL
   const a = document.createElement("a");
   a.href = image;
   a.download = "interaction-map.png";
   a.click();
 });
+</script>
 
 </body>
 </html>
