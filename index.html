@@ -53,13 +53,18 @@ footer { text-align:center; font-size:12px; opacity:.7; }
 <script>
 // 丸を配置
 const map = document.getElementById("map");
-for(let i=0;i<32;i++){
+const friendCount = 30;
+
+for(let i=0;i<friendCount;i++){
   const f = document.createElement("div");
   f.className="user friend";
-  const angle = i * (Math.PI*2/12);
-  const r = 120 + Math.random()*40;
+
+  const angle = i * (Math.PI * 2 / friendCount);
+  const r = 140 + Math.random() * 80;
+
   f.style.left = `calc(50% + ${Math.cos(angle)*r}px - 25px)`;
   f.style.top  = `calc(50% + ${Math.sin(angle)*r}px - 25px)`;
+
   map.appendChild(f);
 }
 
