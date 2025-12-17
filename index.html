@@ -25,6 +25,7 @@ footer {
   font-size:12px;
   opacity:.7;
 }
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </style>
 </head>
 <body>
@@ -60,6 +61,28 @@ for(let i=0;i<12;i++){
 ">
 📤 Xで共有する
 </button>
+
+document.getElementById("shareBtn").addEventListener("click", async () => {
+  const map = document.getElementById("map");
+  const canvas = await html2canvas(map);
+  const image = canvas.toDataURL("image/png");
+
+  const text = encodeURIComponent(
+    "Twitterでの最近のやりとりを可視化してみた\n（直近30日・公開情報のみ）"
+  );
+
+  // 画像はユーザーが保存→手動投稿（iOS制限のため）
+  const win = window.open(
+    `https://twitter.com/intent/tweet?text=${text}`,
+    "_blank"
+  );
+
+  // 画像DL
+  const a = document.createElement("a");
+  a.href = image;
+  a.download = "interaction-map.png";
+  a.click();
+});
 
 </body>
 </html>
