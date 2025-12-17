@@ -4,7 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>交友関係マップ作成ツール (Safe)</title>
-
+<!-- OGP (X / Twitter 用) -->
+<meta property="og:title" content="交友関係マップ作成ツール（安全・非ログイン）">
+<meta property="og:description" content="Twitterのやりとりを可視化。ログイン不要・データ保存なし。">
+<meta property="og:image" content="https://allegrostars.github.io/interaction-map/og.png">
+<meta property="og:url" content="https://allegrostars.github.io/interaction-map/">
+<meta property="og:type" content="website">
+<!-- X専用 -->
+<meta name="twitter:card" content="summary_large_image">
+  
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
@@ -57,9 +65,11 @@ for(let i=0;i<12;i++){
 
 // 共有ボタン（Safari対応）
 document.getElementById("shareBtn").addEventListener("click", () => {
-  const text = encodeURIComponent(
-    "Twitterでの最近のやりとりを可視化してみた（直近30日・公開情報のみ）"
-  );
+  const text = encodeURICompone
+  Twitterでの最近のやりとりを可視化してみた！
+
+#交友関係マップ作成ツール
+https://allegrostars.github.io/interaction-map/
   window.open(
     `https://twitter.com/intent/tweet?text=${text}`,
     "_blank"
