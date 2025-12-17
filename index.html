@@ -63,18 +63,23 @@ for(let i=0;i<12;i++){
   map.appendChild(f);
 }
 
-// 共有ボタン（Safari対応）
+// 共有ボタン
 document.getElementById("shareBtn").addEventListener("click", () => {
-  const text = encodeURICompone
-  Twitterでの最近のやりとりを可視化してみた！
+
+  const text = encodeURIComponent(
+`Twitterでの最近のやりとりを可視化してみた！
 
 #交友関係マップ作成ツール
-https://allegrostars.github.io/interaction-map/
+https://allegrostars.github.io/interaction-map/`
+  );
+
+  // Xを開く
   window.open(
     `https://twitter.com/intent/tweet?text=${text}`,
     "_blank"
   );
 
+  // 画像生成 → 保存
   html2canvas(map).then(canvas => {
     const a = document.createElement("a");
     a.href = canvas.toDataURL("image/png");
