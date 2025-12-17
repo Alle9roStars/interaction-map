@@ -3,138 +3,130 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>交友関係マップ作成ツール (Safe)</title>
+<title>交友関係ランキング (Safe)</title>
 
 <!-- OGP / X -->
-<meta property="og:title" content="交友関係マップ作成ツール（安全・非ログイン）">
-<meta property="og:description" content="Twitterのやりとりを可視化。ログイン不要・データ保存なし。">
+<meta property="og:title" content="交友関係ランキング作成ツール">
+<meta property="og:description" content="Twitterのやりとりをランキング表示。ログイン不要・保存なし。">
 <meta property="og:image" content="https://allegrostars.github.io/interaction-map/og.png">
 <meta property="og:url" content="https://allegrostars.github.io/interaction-map/">
-<meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 
-<!-- html2canvas -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
 body {
-  background: #eef2f5;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  margin: 0;
-  padding: 0;
+  background:#eef2f5;
+  font-family: system-ui, -apple-system, sans-serif;
+  margin:0;
 }
 
 h2 {
-  text-align: center;
-  margin-top: 20px;
+  text-align:center;
+  margin:20px 0;
 }
 
-#map {
-  position: relative;
-  width: 90vw;
-  height: 90vw;
-  max-width: 360px;
-  max-height: 360px;
-  margin: 20px auto;
+#list {
+  max-width:420px;
+  margin:0 auto;
+  background:#fff;
+  border-radius:12px;
+  overflow:hidden;
 }
 
-.user {
-  position: absolute;
-  border-radius: 50%;
-  background: #ccc;
+.row {
+  display:flex;
+  align-items:center;
+  padding:12px;
+  border-bottom:1px solid #eee;
 }
 
-.center {
-  width: 80px;
-  height: 80px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.row:last-child { border-bottom:none; }
+
+.icon {
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#ccc;
+  margin-right:12px;
 }
 
-.friend {
-  width: 50px;
-  height: 50px;
+.name {
+  flex:1;
+  font-size:14px;
 }
 
-#shareBtn {
-  display: block;
-  margin: 20px auto;
-  padding: 10px 16px;
-  font-size: 14px;
+.count {
+  font-weight:bold;
+}
+
+button {
+  display:block;
+  margin:20px auto;
+  padding:10px 16px;
 }
 
 footer {
-  text-align: center;
-  font-size: 12px;
-  opacity: 0.7;
-  margin-bottom: 30px;
+  text-align:center;
+  font-size:12px;
+  opacity:.7;
+  margin-bottom:30px;
 }
 </style>
 </head>
 
 <body>
 
-<h2>Interaction Map</h2>
+<h2>Interaction Ranking</h2>
 
-<div id="map">
-  <div class="user center"></div>
-</div>
+<div id="list"></div>
 
 <button id="shareBtn">📤 Xで共有する</button>
 
 <footer>
-🔒💾 使用したデータの保存はせず、自動で消去します！
+🔒💾 使用したデータは保存されません
 </footer>
 
 <script>
 (() => {
-  const map = document.getElementById("map");
-  const friendCount = 30;   // 表示人数
-  const perLayer = 10;      // 1周あたりの人数
+  const list = document.getElementById("list");
 
-  const mapSize = map.clientWidth;
-  const maxRadius = mapSize / 2 - 30;
-  const layerGap = 55;
+  // ダミーデータ（後で差し替え可能）
+  const users = Array.from({ length: 20 }, (_, i) => ({
+    name: `User_${i + 1}`,
+    count: Math.floor(Math.random() * 150) + 10
+  })).sort((a, b) => b.count - a.count);
 
-  // フレンド配置
-  for (let i = 0; i < friendCount; i++) {
-    const f = document.createElement("div");
-    f.className = "user friend";
+  users.forEach(u => {
+    const row = document.createElement("div");
+    row.className = "row";
 
-    const layer = Math.floor(i / perLayer);
-    const index = i % perLayer;
-    const countInLayer = Math.min(perLayer, friendCount - layer * perLayer);
+    row.innerHTML = `
+      <div class="icon"></div>
+      <div class="name">${u.name}</div>
+      <div class="count">${u.count}</div>
+    `;
 
-    const angle = index * (Math.PI * 2 / countInLayer);
-    const r = Math.min(80 + layer * layerGap, maxRadius);
+    list.appendChild(row);
+  });
 
-    f.style.left = `calc(50% + ${Math.cos(angle) * r}px - 25px)`;
-    f.style.top  = `calc(50% + ${Math.sin(angle) * r}px - 25px)`;
-
-    map.appendChild(f);
-  }
-
-  // 共有ボタン
   document.getElementById("shareBtn").addEventListener("click", () => {
     const text = encodeURIComponent(
-`Twitterでの最近のやりとりを可視化してみた！
+`最近のやりとりをランキング化してみた！
 
 #交友関係マップ作成ツール
 https://allegrostars.github.io/interaction-map/`
     );
 
-    // Xを開く
     window.open(
       `https://twitter.com/intent/tweet?text=${text}`,
       "_blank"
     );
 
-    // 画像保存（iOS対応）
-    html2canvas(map).then(canvas => {
+    html2canvas(list).then(canvas => {
       const a = document.createElement("a");
       a.href = canvas.toDataURL("image/png");
-      a.download = "interaction-map.png";
+      a.download = "interaction-ranking.png";
       a.click();
     });
   });
