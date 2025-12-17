@@ -2,111 +2,144 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>交友関係マップ作成ツール (Safe)</title>
-<!-- OGP (X / Twitter 用) -->
+
+<!-- OGP / X -->
 <meta property="og:title" content="交友関係マップ作成ツール（安全・非ログイン）">
 <meta property="og:description" content="Twitterのやりとりを可視化。ログイン不要・データ保存なし。">
 <meta property="og:image" content="https://allegrostars.github.io/interaction-map/og.png">
 <meta property="og:url" content="https://allegrostars.github.io/interaction-map/">
 <meta property="og:type" content="website">
-<!-- X専用 -->
 <meta name="twitter:card" content="summary_large_image">
-  
+
+<!-- html2canvas -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-body { background:#eef2f5; font-family: system-ui; }
-#map { position: relative; width: 90vw; height: 90vw; margin: auto; }
-.user { position:absolute; border-radius:50%; background:#ccc; }
-.center {
-  width:80px; height:80px;
-  top:50%; left:50%;
-  transform:translate(-50%,-50%);
+body {
+  background: #eef2f5;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+  padding: 0;
 }
-.friend { width:50px; height:50px; }
-footer { text-align:center; font-size:12px; opacity:.7; }
+
+h2 {
+  text-align: center;
+  margin-top: 20px;
+}
+
+#map {
+  position: relative;
+  width: 90vw;
+  height: 90vw;
+  max-width: 360px;
+  max-height: 360px;
+  margin: 20px auto;
+}
+
+.user {
+  position: absolute;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+.center {
+  width: 80px;
+  height: 80px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.friend {
+  width: 50px;
+  height: 50px;
+}
+
+#shareBtn {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.7;
+  margin-bottom: 30px;
+}
 </style>
 </head>
 
 <body>
 
-<h2 style="text-align:center">Interaction Map</h2>
+<h2>Interaction Map</h2>
 
 <div id="map">
   <div class="user center"></div>
 </div>
 
-<button id="shareBtn" style="
-  display:block;
-  margin:20px auto;
-  padding:10px 16px;
-  font-size:14px;
-">
-📤 Xで共有する
-</button>
+<button id="shareBtn">📤 Xで共有する</button>
 
 <footer>
 🔒💾 使用したデータの保存はせず、自動で消去します！
 </footer>
 
 <script>
-// 丸を配置
-<script>
-const map = document.getElementById("map");
-const friendCount = 30;
-const perLayer = 10;
+(() => {
+  const map = document.getElementById("map");
+  const friendCount = 30;   // 表示人数
+  const perLayer = 10;      // 1周あたりの人数
 
-// マップの半径（画面サイズ基準）
-const mapSize = map.clientWidth;
-const maxRadius = mapSize / 2 - 40; // 端に余白
-const layerGap = 60;
+  const mapSize = map.clientWidth;
+  const maxRadius = mapSize / 2 - 30;
+  const layerGap = 55;
 
-for (let i = 0; i < friendCount; i++) {
-  const f = document.createElement("div");
-  f.className = "user friend";
+  // フレンド配置
+  for (let i = 0; i < friendCount; i++) {
+    const f = document.createElement("div");
+    f.className = "user friend";
 
-  const layer = Math.floor(i / perLayer);
-  const index = i % perLayer;
-  const countInLayer = Math.min(perLayer, friendCount - layer * perLayer);
+    const layer = Math.floor(i / perLayer);
+    const index = i % perLayer;
+    const countInLayer = Math.min(perLayer, friendCount - layer * perLayer);
 
-  const angle = index * (Math.PI * 2 / countInLayer);
+    const angle = index * (Math.PI * 2 / countInLayer);
+    const r = Math.min(80 + layer * layerGap, maxRadius);
 
-  // 半径を画面内に収める
-  const r = Math.min(80 + layer * layerGap, maxRadius);
+    f.style.left = `calc(50% + ${Math.cos(angle) * r}px - 25px)`;
+    f.style.top  = `calc(50% + ${Math.sin(angle) * r}px - 25px)`;
 
-  f.style.left = `calc(50% + ${Math.cos(angle) * r}px - 25px)`;
-  f.style.top  = `calc(50% + ${Math.sin(angle) * r}px - 25px)`;
+    map.appendChild(f);
+  }
 
-  map.appendChild(f);
-}
-</script>
-
-// 共有ボタン
-document.getElementById("shareBtn").addEventListener("click", () => {
-
-  const text = encodeURIComponent(
+  // 共有ボタン
+  document.getElementById("shareBtn").addEventListener("click", () => {
+    const text = encodeURIComponent(
 `Twitterでの最近のやりとりを可視化してみた！
 
 #交友関係マップ作成ツール
 https://allegrostars.github.io/interaction-map/`
-  );
+    );
 
-  // Xを開く
-  window.open(
-    `https://twitter.com/intent/tweet?text=${text}`,
-    "_blank"
-  );
+    // Xを開く
+    window.open(
+      `https://twitter.com/intent/tweet?text=${text}`,
+      "_blank"
+    );
 
-  // 画像生成 → 保存
-  html2canvas(map).then(canvas => {
-    const a = document.createElement("a");
-    a.href = canvas.toDataURL("image/png");
-    a.download = "interaction-map.png";
-    a.click();
+    // 画像保存（iOS対応）
+    html2canvas(map).then(canvas => {
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL("image/png");
+      a.download = "interaction-map.png";
+      a.click();
+    });
   });
-});
+})();
 </script>
 
 </body>
-</html> 
+</html>
