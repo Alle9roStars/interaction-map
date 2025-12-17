@@ -53,34 +53,27 @@ footer { text-align:center; font-size:12px; opacity:.7; }
 <script>
 // 丸を配置
 <script>
-// 丸を配置
 const map = document.getElementById("map");
 const friendCount = 30;
+const perLayer = 10;
 
-// 1周に置く最大人数
-const perLayer = 12;
+// マップの半径（画面サイズ基準）
+const mapSize = map.clientWidth;
+const maxRadius = mapSize / 2 - 40; // 端に余白
+const layerGap = 60;
 
-// レイヤー数
-const layers = Math.ceil(friendCount / perLayer);
-
-for(let i = 0; i < friendCount; i++){
+for (let i = 0; i < friendCount; i++) {
   const f = document.createElement("div");
   f.className = "user friend";
 
-  // 何周目か
   const layer = Math.floor(i / perLayer);
   const index = i % perLayer;
-
-  // そのレイヤーの人数
-  const countInLayer = Math.min(
-    perLayer,
-    friendCount - layer * perLayer
-  );
+  const countInLayer = Math.min(perLayer, friendCount - layer * perLayer);
 
   const angle = index * (Math.PI * 2 / countInLayer);
 
-  // 半径：内側から順に広げる
-  const r = 120 + layer * 70;
+  // 半径を画面内に収める
+  const r = Math.min(80 + layer * layerGap, maxRadius);
 
   f.style.left = `calc(50% + ${Math.cos(angle) * r}px - 25px)`;
   f.style.top  = `calc(50% + ${Math.sin(angle) * r}px - 25px)`;
