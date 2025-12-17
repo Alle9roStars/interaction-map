@@ -3,32 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>交友関係マップ (Safe)</title>
+<title>交友関係マップ作成ツール (Safe)</title>
 
-<!-- html2canvas は head に -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
 body { background:#eef2f5; font-family: system-ui; }
 #map { position: relative; width: 90vw; height: 90vw; margin: auto; }
-.user {
-  position:absolute;
-  border-radius:50%;
-  background:#ccc;
-}
+.user { position:absolute; border-radius:50%; background:#ccc; }
 .center {
   width:80px; height:80px;
   top:50%; left:50%;
   transform:translate(-50%,-50%);
 }
-.friend {
-  width:50px; height:50px;
-}
-footer {
-  text-align:center;
-  font-size:12px;
-  opacity:.7;
-}
+.friend { width:50px; height:50px; }
+footer { text-align:center; font-size:12px; opacity:.7; }
 </style>
 </head>
 
@@ -50,7 +39,7 @@ footer {
 </button>
 
 <footer>
-🔒 Read-only / 💾 No data stored
+🔒💾 使用したデータの保存はせず、自動で消去します！
 </footer>
 
 <script>
@@ -66,24 +55,22 @@ for(let i=0;i<12;i++){
   map.appendChild(f);
 }
 
-// 共有ボタン
-document.getElementById("shareBtn").addEventListener("click", async () => {
-  const canvas = await html2canvas(map);
-  const image = canvas.toDataURL("image/png");
-
+// 共有ボタン（Safari対応）
+document.getElementById("shareBtn").addEventListener("click", () => {
   const text = encodeURIComponent(
     "Twitterでの最近のやりとりを可視化してみた（直近30日・公開情報のみ）"
   );
-
   window.open(
     `https://twitter.com/intent/tweet?text=${text}`,
     "_blank"
   );
 
-  const a = document.createElement("a");
-  a.href = image;
-  a.download = "interaction-map.png";
-  a.click();
+  html2canvas(map).then(canvas => {
+    const a = document.createElement("a");
+    a.href = canvas.toDataURL("image/png");
+    a.download = "interaction-map.png";
+    a.click();
+  });
 });
 </script>
 
