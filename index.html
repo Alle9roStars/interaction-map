@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interaction Map (Safe)</title>
+<style>
+body { background:#eef2f5; font-family: system-ui; }
+#map { position: relative; width: 90vw; height: 90vw; margin: auto; }
+.user {
+  position:absolute;
+  border-radius:50%;
+  background:#ccc;
+}
+.center {
+  width:80px; height:80px;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+}
+.friend {
+  width:50px; height:50px;
+}
+footer {
+  text-align:center;
+  font-size:12px;
+  opacity:.7;
+}
+</style>
+</head>
+<body>
+
+<h2 style="text-align:center">Interaction Map</h2>
+
+<div id="map">
+  <div class="user center"></div>
+</div>
+
+<footer>
+🔒 Read-only / 💾 No data stored
+</footer>
+
+<script>
+const map = document.getElementById("map");
+for(let i=0;i<12;i++){
+  const f = document.createElement("div");
+  f.className="user friend";
+  const angle = i * (Math.PI*2/12);
+  const r = 120 + Math.random()*40;
+  f.style.left = `calc(50% + ${Math.cos(angle)*r}px - 25px)`;
+  f.style.top  = `calc(50% + ${Math.sin(angle)*r}px - 25px)`;
+  map.appendChild(f);
+}
+</script>
+
+</body>
+</html>
